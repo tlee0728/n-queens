@@ -78,13 +78,29 @@
     // --------------------------------------------------------------
     //
     // test if a specific row on this board contains a conflict
+
+
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      var count = 0;
+      for (var i = 0; i < this.rows()[rowIndex].length; i++) {
+        if (this.rows()[rowIndex][i] !== 0) {
+          count += 1;
+        }
+      }
+      if (count > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      for (var i = 0; i < this.rows()[0].length; i++) {
+        if (this.hasRowConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -94,12 +110,26 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var count = 0;
+      for (var i = 0; i < this.rows()[0].length; i++) {
+        if (this.rows()[i][colIndex] !== 0) {
+          count += 1;
+        }
+      }
+      if (count > 1) {
+        return true;
+      }
+      return false; 
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      for (var i = 0; i < this.rows()[0].length; i++) {
+        if (this.hasColConflictAt(i)) {
+          return true;
+        }
+      }
+      return false; 
     },
 
 
@@ -109,12 +139,45 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      
+      var count = 0;
+      if (majorDiagonalColumnIndexAtFirstRow < 0){
+        var i = -majorDiagonalColumnIndexAtFirstRow;
+        var j = 0;
+        while (i < this.rows()[0].length) {
+          //check spot to see if it is not equal to 0
+          if (this.rows()[i][j] !== 0){
+          //add one to count if there is above
+            count++;
+          }
+          i++;
+          j++;
+        }
+      } else {
+        var i = 0;
+        var j = majorDiagonalColumnIndexAtFirstRow;
+        while (j < this.rows()[0].length){
+          if (this.rows()[i][j] !== 0){
+            count++;
+          }
+          i++;
+          j++;
+        }
+      }
+      if (count > 1){
+        return true;
+      }
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      for (var i = -(this.rows()[0].length - 1); i < this.rows()[0].length - 1; i++){
+        if (this.hasMajorDiagonalConflictAt(i)){
+          return true;
+        }
+      }
+      return false; 
     },
 
 
@@ -124,12 +187,46 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var count  = 0;
+
+      if (minorDiagonalColumnIndexAtFirstRow <= this.rows()[0].length - 1){
+        var i = minorDiagonalColumnIndexAtFirstRow;
+        var j = 0;
+        //check if element has a 0
+        while (i >= 0){
+          if (this.rows()[i][j] !== 0){
+            count++;
+          }
+          i--;
+          j++;
+        }
+      } else {
+        var i = this.rows()[0].length - 1;
+        var j = minorDiagonalColumnIndexAtFirstRow - (this.rows()[0].length - 1);
+
+        while (j < this.rows()[0].length){
+          if (this.rows()[i][j] !== 0){
+            count++;
+          }
+          i--;
+          j++;
+        }
+      }
+
+      if (count > 1){
+        return true;
+      }
+      return false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      for (i = 0; i < 2 * this.rows()[0].length - 2; i++) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
