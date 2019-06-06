@@ -27,9 +27,6 @@ window.findNRooksSolution = function(n) {
 
     // recursive helper function
   var helper = function(row, col, numRooks) {
-    if (row === n || col === n) {
-      return;
-    }
     // toggle current piece
     solution.togglePiece(row, col);
 
@@ -40,8 +37,8 @@ window.findNRooksSolution = function(n) {
       return;
     }
 
-    if (numRooks === n) {
-      check = true;
+    if (numRooks === n - 1) {
+      // check = true;
       return;
     }
 
@@ -93,6 +90,11 @@ window.countNRooksSolutions = function(n) {
     solution.togglePiece(row, col);
   };
     
+
+  if (n === 1) {
+    return 1;
+  }
+
   // initial run
   for (var k = 0; k < n; k++) {
     solution.togglePiece(0, k);
@@ -108,12 +110,84 @@ window.countNRooksSolutions = function(n) {
   return solutionCount;
 };
 
+
+
+
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; 
-  // your code here
+  var solution = new Board({n: n}); 
+  var flag = false;
+  if (n === 0) {
+    console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+    return solution.rows();
+  } else if (n === 1) {
+    solution.togglePiece(0,0);
+    console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+    return solution.rows();
+  }
+
+  //recursive helper function with row, columns, number of queens
+  var helper = function(row, column, numQueens){
+    //toggle position and then check from there
+    solution.togglePiece(row, column);
+
+    //check if there are conflicts with queens
+    if (solution.hasAnyQueensConflicts()){
+      //toggle the piece that caused conflict
+      solution.togglePiece(row, column);
+      //return out
+      return;
+    }
+    //need to add something for when all conditions met, and I want to exit out
+
+    //want it to be n - 1 because number of queens lags behind our toggole
+    //we toggled it at line 125. solution.togglePiece(row, column) and we never added to numQueens
+    //also we never want to mutate the parameter numQueens because it is inputted into our helper fn
+    //we just want to compare it with n - 1 b/c it is lagging
+    if (numQueens === n - 1){
+      flag = true; 
+      return;
+    }
+
+    //if there isnt a conflict
+    //use recursive helper function again to go one lvl deeper
+    //since no for loop inside of helper fn, i would need one to loop across row 
+    for (var i = 0; i < n; i++){
+      //because i successfuly passed has no conflicts above and toggled piece, i would now update numQueens becuase i placed one on board
+      helper(row + 1, i, numQueens + 1);
+      //as i call the helper fn to go own lvl deeper, that lvl will be stopped at 145
+      //so if 4 levels deep, each lvl will be stopped at helper fn call, line 144, as i return out of helper function, it will encounter the return statement
+      //so lvl 3, line 144. lvl 2 line 144, lvl 1 line 144. 
+      if (flag){
+        return;
+      }
+
+    }
+    solution.togglePiece(row, column);
+  }
+
+  // initialize
+  //for loop will go across
+  for (var i = 0; i < n; i++){
+    solution.togglePiece(0, i);
+    //for loop will tackle the rest of the rows below row 2. (ie 4 rows, recursion does 2 top rows, but 2 bott rows are not taken into account)
+    for (var j = 0; j < n; j++){
+
+      //recursion goes into first two rows
+      helper(1, j, 1);  
+      if (flag) {
+        //need to get out of this outer for loop so we added this
+        return solution.rows();
+      }
+    }
+    solution.togglePiece(0, i);
+
+  }
+
+  console.log(solution);
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  //put this here just in case
+  return solution.rows();
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
