@@ -96,13 +96,32 @@ window.countNRooksSolutions = function(n) {
   }
 
   // initial run
-  for (var k = 0; k < n; k++) {
-    solution.togglePiece(0, k);
-    for (var j = 0; j < n; j++) {
-      helper(1, j, 1); 
-    }
+  // for even
+  if (n % 2 === 0) {
+    for (var k = 0; k < n / 2; k++) {
+      solution.togglePiece(0, k);
+      for (var j = 0; j < n; j++) {
+        helper(1, j, 1); 
+      }
 
-    solution.togglePiece(0, k);
+      solution.togglePiece(0, k);
+    }
+    solutionCount *= 2;
+
+    // for odd
+  } else {
+    for (var k = 0; k < Math.ceil(n / 2); k++) {
+      solution.togglePiece(0, k);
+      for (var j = 0; j < n; j++) {
+        helper(1, j, 1); 
+      }
+
+      solution.togglePiece(0, k);
+      if (k === Math.floor(n / 2) - 1) {
+        solutionCount *= 2;
+      }
+    }
+    
   }
 
 
@@ -190,10 +209,73 @@ window.findNQueensSolution = function(n) {
   return solution.rows();
 };
 
+
+
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = 0; 
-  // your code here
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  var solution = new Board({n: n});
+  var solutionCount = 0;
+
+    // recursive helper function
+  var helper = function(row, col, numQueens) {
+    // toggle current position
+    solution.togglePiece(row, col);
+
+    // check if current piece conflicts
+    if (solution.hasAnyQueensConflicts()) {
+    // if it does conflict, untoggle then return.
+      solution.togglePiece(row, col);
+      return;
+    }
+
+    if (numQueens === n - 1) {
+      solutionCount++;
+      solution.togglePiece(row, col);
+      return;
+    }
+
+    // else, iterate through the next row
+    for (var j = 0; j < n; j++) {
+      helper(row + 1, j, numQueens + 1);
+    }
+    solution.togglePiece(row, col);
+  };
+    
+
+  if (n === 1) {
+    return 1;
+  }
+
+  // initial run
+  // for even
+  if (n % 2 === 0) {
+    for (var k = 0; k < n / 2; k++) {
+      solution.togglePiece(0, k);
+      for (var j = 0; j < n; j++) {
+        helper(1, j, 1); 
+      }
+
+      solution.togglePiece(0, k);
+    }
+    solutionCount *= 2;
+
+    // for odd
+  } else {
+    for (var k = 0; k < Math.ceil(n / 2); k++) {
+      solution.togglePiece(0, k);
+      for (var j = 0; j < n; j++) {
+        helper(1, j, 1); 
+      }
+
+      solution.togglePiece(0, k);
+      if (k === Math.floor(n / 2) - 1) {
+        solutionCount *= 2;
+      }
+    }
+    
+  }
+
+
+  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
